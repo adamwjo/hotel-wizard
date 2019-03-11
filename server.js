@@ -1,12 +1,33 @@
 const express = require('express');
-const config = require('./config')
+const mongoose = require('mongoose');
+const config = require('./config');
 
 const app = express();
+const db = config.MONGODB_URI;
+
+const userRoutes = require('./api/routes/users.js');
+const profileRoutes = require('./api/routes/profiles.js');
+const reservationRoutes = require('./api/routes/reservations.js');
+
+
+
+//connection to mongoDB
+mongoose
+.connect(db, {useNewUrlParser: true})
+.then(() => console.log('connected to mongoDB'))
+.catch(error => console.log(error));
+
 
 app.get('/', (req, res) => {
     res.send('Server is connected')
 });
 
-const port = config.PORT
+//routes
+app.use('/api/users', userRoutes);
+app.use('/api/profiles', profileRoutes);
+app.use('/api/reservations', reservationRoutes);
 
-app.listen(port, () => console.log(`Server running on port: ${port}`))
+
+const port = config.PORT;
+
+app.listen(port, () => console.log(`Server running on port: ${port}`));
