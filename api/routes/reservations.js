@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/test', (req, res) => {
     res.json({
         message: "reservation route connected"
     });
 });
 
-module.exports = router;
+module.exports = router
