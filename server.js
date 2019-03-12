@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const config = require('./config');
+const bodyParser = require('body-parser');
+
+
 
 const app = express();
 const db = config.MONGODB_URI;
@@ -9,6 +12,9 @@ const userRoutes = require('./api/routes/users.js');
 const profileRoutes = require('./api/routes/profiles.js');
 const reservationRoutes = require('./api/routes/reservations.js');
 
+//middleware
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 
 //connection to mongoDB
