@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User.js');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('../../config.js')
 
 
 
@@ -56,6 +58,47 @@ router.post('/user-sign-up', (req, res) => {
         }
     )
 });
+
+//@route - GET /api/users/login
+//@desc - Log user in and return JWT token
+//@access Public
+router.post('/login', (req, res) => {
+    const email = req.body.email
+    const password = req.body.password;
+    //find the user by email;
+    User.findOne({email: email})
+        .then(user => {
+            //check for user
+            if(!user){
+                return res.status(404).json({email: 'User with this email cannot be found'})
+            }
+            //check password
+            bcrypt.compare(password, user.password).then(isMatch => {
+                if (isMatch){
+                    //when the user is matched create a payload
+
+                    const payload = { 
+                        _id: user.id, 
+                        first_name: user.first_name, 
+                        last_name: user.last_name
+                    } // this is the jwt payload
+
+                    //now the token can be signed
+                    jwt.sign(payload, config.SECRET, { expiresIn: 3600 },
+                        (error, token) => {
+                            res.json({
+                                message: 'successful login',
+                                token: 'Bearer ' + token
+                            })
+                    } );
+
+                } else {
+                    return res.status(400).json({password: 'invalid password'})
+                }
+            })
+        })
+        .catch(err => console.log(err))
+})
 
 
 
