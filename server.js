@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const config = require('./config');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+
 
 
 
@@ -15,7 +17,10 @@ const reservationRoutes = require('./api/routes/reservations.js');
 //middleware
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(passport.initialize());
 
+//passport config
+require('./config/passport.js')(passport);
 
 //connection to mongoDB
 mongoose
