@@ -46,9 +46,8 @@ router.post('/user-sign-up', (req, res) => {
     }).then(
         user => {
             if(user){
-                return res.status(400).json({
-                    email: 'Email already exists'
-                })
+                errors.email = 'Email already exits'
+                return res.status(400).json(errors)
             } else {
                 const newUser = new User({
                     first_name: req.body.first_name,
