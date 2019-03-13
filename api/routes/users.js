@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const config = require('../../config.js');
 
+//load user model
+const User = require('../models/User.js');
+
+//load input validation
+const validateRegisterInput = require('../../config/validation/register.js');
 
 
 
@@ -31,6 +35,12 @@ router.get('/', (req, res) => {
 //@desc - User sign up route
 //@access - public
 router.post('/user-sign-up', (req, res) => {
+    const { errors, isValid } = validateRegisterInput(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors)
+    }
+
     User.findOne({
         email: req.body.email
     }).then(
@@ -48,7 +58,7 @@ router.post('/user-sign-up', (req, res) => {
                 })
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
-                      if (err) throw err;
+                      if(err) throw err;
                       newUser.password = hash;
                       newUser
                         .save()
