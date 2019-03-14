@@ -9,7 +9,7 @@ const config = require('../../config.js');
 const User = require('../models/User.js');
 
 //load input validation
-const validateRegisterInput = require('../../config/validation/register.js');
+const validateUserSignUpInput = require('../../config/validation/userSignUp.js');
 
 
 
@@ -25,17 +25,17 @@ router.get('/test', (req, res) => {
 //@route - GET /api/users
 //@desc - user index for test purposes
 //@access - test
-router.get('/', (req, res) => {
-    User.find().then(users => {
-        res.json(users)
-    });
-});
+// router.get('/', (req, res) => {
+//     User.find().then(users => {
+//         res.json(users)
+//     });
+// });
 
 //@route - POST /api/users/user-sign-up
 //@desc - User sign up route
 //@access - public
 router.post('/user-sign-up', (req, res) => {
-    const { errors, isValid } = validateRegisterInput(req.body);
+    const { errors, isValid } = validateUserSignUpInput(req.body);
 
     if (!isValid) {
         return res.status(400).json(errors)
