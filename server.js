@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 
 //routes
 app.use('/api/users', userRoutes);
-app.use('/api/profiles', profileRoutes);
+app.use('/api/profile', profileRoutes);
 app.use('/api/reservations', reservationRoutes);
 
 
