@@ -10,6 +10,7 @@ const User = require('../models/User.js');
 
 //load input validation
 const validateUserSignUpInput = require('../../config/validation/userSignUp.js');
+const validateLoginInput = require('../../config/validation/login.js');
 
 
 
@@ -22,14 +23,14 @@ router.get('/test', (req, res) => {
     });
 });
 
-//@route - GET /api/users
-//@desc - user index for test purposes
-//@access - test
-// router.get('/', (req, res) => {
-//     User.find().then(users => {
-//         res.json(users)
-//     });
-// });
+// @route - GET /api/users
+// @desc - user index for test purposes
+// @access - test
+router.get('/', (req, res) => {
+    User.find().then(users => {
+        res.json(users)
+    });
+});
 
 //@route - POST /api/users/user-sign-up
 //@desc - User sign up route
@@ -74,6 +75,11 @@ router.post('/user-sign-up', (req, res) => {
 //@desc - Log user in and return JWT token
 //@access Public
 router.post('/login', (req, res) => {
+    const { errors, isValid } = validateLoginInput(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors)
+    }
     const email = req.body.email
     const password = req.body.password;
     //find the user by email;
@@ -81,7 +87,8 @@ router.post('/login', (req, res) => {
         .then(user => {
             //check for user
             if(!user){
-                return res.status(404).json({email: 'User with this email cannot be found'})
+                errors.email = `No user can be found with this email address: ${email}`
+                return res.status(404).json(errors);
             }
             //check password
             bcrypt.compare(password, user.password).then(isMatch => {
@@ -104,7 +111,8 @@ router.post('/login', (req, res) => {
                     } );
 
                 } else {
-                    return res.status(400).json({password: 'invalid password'})
+                    errors.password = 'Incorrect Password'
+                    return res.status(400).json(errors)
                 }
             })
         })

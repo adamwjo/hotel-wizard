@@ -5,6 +5,7 @@ module.exports = function validateRegisterInput(data) {
     let errors = {};
     
     //if the data is NOT empty data gets sent to subsequent lines of code for further validation
+    //Validator can only check strings
     data.first_name = !isEmpty(data.first_name) ? data.first_name : '';
     data.last_name = !isEmpty(data.last_name) ? data.last_name : '';
     data.email = !isEmpty(data.email) ? data.email : '';
