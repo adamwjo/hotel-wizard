@@ -19,7 +19,6 @@ router.get('/test', (req, res) => {
 //@route - GET api/profile
 //@desc - gets the current users profile
 //@access - private
-
 router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     const errors = {};
     Profile.findOne({ user: req.user.id })
@@ -32,6 +31,41 @@ router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
         })
         .catch(err => res.json(404).json(err));
 });
+
+//@route - POST api/profile
+//@desc - creates a profile for a user
+//@access - private
+router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
+    const profileData = {};
+    profileData.user = req.user.id;
+    if(req.body.handle) profileData.handle = req.body.handle
+    if(req.body.bio) profileData.bio = req.body.bio
+    if(typeof req.body.languages !== 'undefined') {
+        profileData.languages = req.body.languages.split(',')
+    }
+    
+    Profile.findOne({ user: req.user.id }).then(profile => {
+        if(profile){
+            //if a profile is found update it
+            Profile.findOneAndUpdate(
+                { user: req.user.id },
+                { $set: profileData },
+                { new: true }
+            ).then(profile => res.json(profile))
+        } else {
+            // if a profile is not found create one
+            //check if the handle exits
+            Profile.findOne({ handle: profileData.handle }).then(profile => {
+                if (profile) {
+                    errors.handle = 'Handle already exits'
+                    res.status(400).json(errors)
+                }
+                //save profile
+                new Profile(profileData).save().then(profile => res.json(profile))
+            })
+        }
+    })
+})
 
 
 module.exports = router;
